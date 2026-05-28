@@ -14,16 +14,245 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      practice_sessions: {
+        Row: {
+          artist: string | null
+          audio_url: string | null
+          bpm: number | null
+          created_at: string
+          id: string
+          loop_end: number | null
+          loop_start: number | null
+          notes: string | null
+          offset_ms: number
+          pitch_semitones: number
+          saved_tab_id: string | null
+          tempo: number
+          title: string | null
+          updated_at: string
+          user_id: string
+          youtube_title: string | null
+          youtube_video_id: string | null
+        }
+        Insert: {
+          artist?: string | null
+          audio_url?: string | null
+          bpm?: number | null
+          created_at?: string
+          id?: string
+          loop_end?: number | null
+          loop_start?: number | null
+          notes?: string | null
+          offset_ms?: number
+          pitch_semitones?: number
+          saved_tab_id?: string | null
+          tempo?: number
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          youtube_title?: string | null
+          youtube_video_id?: string | null
+        }
+        Update: {
+          artist?: string | null
+          audio_url?: string | null
+          bpm?: number | null
+          created_at?: string
+          id?: string
+          loop_end?: number | null
+          loop_start?: number | null
+          notes?: string | null
+          offset_ms?: number
+          pitch_semitones?: number
+          saved_tab_id?: string | null
+          tempo?: number
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          youtube_title?: string | null
+          youtube_video_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      saved_tabs: {
+        Row: {
+          artist: string | null
+          created_at: string
+          format: string | null
+          id: string
+          midi_storage_path: string | null
+          raw_content: string | null
+          songsterr_id: string | null
+          source: Database["public"]["Enums"]["tab_source"]
+          storage_path: string | null
+          tab_url: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          artist?: string | null
+          created_at?: string
+          format?: string | null
+          id?: string
+          midi_storage_path?: string | null
+          raw_content?: string | null
+          songsterr_id?: string | null
+          source: Database["public"]["Enums"]["tab_source"]
+          storage_path?: string | null
+          tab_url?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          artist?: string | null
+          created_at?: string
+          format?: string | null
+          id?: string
+          midi_storage_path?: string | null
+          raw_content?: string | null
+          songsterr_id?: string | null
+          source?: Database["public"]["Enums"]["tab_source"]
+          storage_path?: string | null
+          tab_url?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tracks: {
+        Row: {
+          audio_url: string | null
+          created_at: string
+          duration_seconds: number | null
+          error_message: string | null
+          id: string
+          image_url: string | null
+          instrumental: boolean
+          instrumental_url: string | null
+          lyrics: string | null
+          model: string | null
+          prompt: string | null
+          status: Database["public"]["Enums"]["track_status"]
+          stream_audio_url: string | null
+          style: string | null
+          suno_audio_id: string | null
+          suno_task_id: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+          video_url: string | null
+          vocal_url: string | null
+        }
+        Insert: {
+          audio_url?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          error_message?: string | null
+          id?: string
+          image_url?: string | null
+          instrumental?: boolean
+          instrumental_url?: string | null
+          lyrics?: string | null
+          model?: string | null
+          prompt?: string | null
+          status?: Database["public"]["Enums"]["track_status"]
+          stream_audio_url?: string | null
+          style?: string | null
+          suno_audio_id?: string | null
+          suno_task_id?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          video_url?: string | null
+          vocal_url?: string | null
+        }
+        Update: {
+          audio_url?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          error_message?: string | null
+          id?: string
+          image_url?: string | null
+          instrumental?: boolean
+          instrumental_url?: string | null
+          lyrics?: string | null
+          model?: string | null
+          prompt?: string | null
+          status?: Database["public"]["Enums"]["track_status"]
+          stream_audio_url?: string | null
+          style?: string | null
+          suno_audio_id?: string | null
+          suno_task_id?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          video_url?: string | null
+          vocal_url?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      tab_source: "songsterr" | "ai_local" | "manual"
+      track_status: "pending" | "processing" | "complete" | "error"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +379,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      tab_source: ["songsterr", "ai_local", "manual"],
+      track_status: ["pending", "processing", "complete", "error"],
+    },
   },
 } as const
