@@ -105,22 +105,19 @@ export const refreshTrack = createServerFn({ method: "POST" })
         data?: {
           status?: string;
           response?: {
-            sunoData?: Array<{
-              id?: string;
-              audioUrl?: string;
-              streamAudioUrl?: string;
-              imageUrl?: string;
-              title?: string;
-              duration?: number;
-            }>;
-          };
-        };
-      }>(`/generate/record-info?taskId=${encodeURIComponent(track.suno_task_id)}`, { method: "GET" });
-
       const status = res.data?.status?.toUpperCase() ?? "PROCESSING";
       const item = res.data?.response?.sunoData?.[0];
 
-      const update: Record<string, unknown> = {};
+      const update: {
+        audio_url?: string;
+        stream_audio_url?: string;
+        image_url?: string;
+        duration_seconds?: number;
+        title?: string;
+        suno_audio_id?: string;
+        status?: "pending" | "processing" | "complete" | "error";
+        error_message?: string;
+      } = {};
       if (item?.audioUrl) update.audio_url = item.audioUrl;
       if (item?.streamAudioUrl) update.stream_audio_url = item.streamAudioUrl;
       if (item?.imageUrl) update.image_url = item.imageUrl;
@@ -136,6 +133,8 @@ export const refreshTrack = createServerFn({ method: "POST" })
 
       if (Object.keys(update).length > 0) {
         await supabase.from("tracks").update(update).eq("id", track.id);
+      }
+
       }
 
       const { data: fresh } = await supabase.from("tracks").select("*").eq("id", track.id).single();
