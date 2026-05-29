@@ -87,8 +87,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </header>
       <main className="flex-1">{children}</main>
       <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-        Built with Lovable · Suno · alphaTab · Songsterr
+      <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
+        Built with Lovable · alphaTab · Songsterr
       </footer>
-    </div>
   );
 }
