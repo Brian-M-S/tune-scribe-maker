@@ -60,7 +60,6 @@ function Landing() {
               pitch, and practice with guitar tabs that follow the original
               audio note by note.
             </p>
-            </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="glow-primary">
                 <Link to="/auth">
