@@ -31,11 +31,10 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
     (async () => {
       if (!mountRef.current) return;
       try {
-        const mod = await import("@coderline/alphatab");
-        // @ts-expect-error — alphaTab types are not exported cleanly
+        const mod: any = await import("@coderline/alphatab");
+        const alphaTab: any = mod.default ?? mod;
         const AlphaTabApi = alphaTab.AlphaTabApi;
 
-        const synth = alphaTab.synth;
 
         const settings = {
           core: {
