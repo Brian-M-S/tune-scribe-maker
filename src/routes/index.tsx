@@ -41,21 +41,25 @@ const FEATURES = [
     body: "Find the tab, lock it to the original audio like Songsterr, and export to PDF in one click.",
   },
 ];
+
+function Landing() {
+  return (
+    <AppShell>
       <section className="relative overflow-hidden">
         <div className="mx-auto max-w-6xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full bg-primary glow-primary" />
-              Suno + Moises + Songsterr, in one app
+              Moises + Songsterr, in one app
             </span>
             <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-6xl">
-              Make music. <span className="text-gradient">Slow it down.</span>{" "}
-              Play along.
+              Slow it down. <span className="text-gradient">Play along.</span>
             </h1>
             <p className="mt-5 text-lg text-muted-foreground">
-              Generate songs with AI, separate vocals, slow down any YouTube
-              video without changing pitch, and practice with guitar tabs that
-              follow the original audio note by note.
+              Separate vocals, slow down any YouTube video without changing
+              pitch, and practice with guitar tabs that follow the original
+              audio note by note.
+            </p>
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="glow-primary">
