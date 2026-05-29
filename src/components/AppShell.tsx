@@ -1,10 +1,9 @@
 import { Link, useRouter } from "@tanstack/react-router";
-import { Music2, Library, Wand2, LogOut, Mic2 } from "lucide-react";
+import { Music2, Library, LogOut, Mic2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut, useAuth } from "@/lib/auth";
 
 const NAV = [
-  { to: "/studio", label: "Studio", icon: Wand2 },
   { to: "/practice", label: "Practice", icon: Mic2 },
   { to: "/library", label: "Library", icon: Library },
 ] as const;
@@ -88,7 +87,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </header>
       <main className="flex-1">{children}</main>
       <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-        Built with Lovable · Suno · alphaTab · Songsterr
+        Built with Lovable · alphaTab · Songsterr
       </footer>
     </div>
   );

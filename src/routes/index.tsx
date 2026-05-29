@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { Wand2, Sliders, Youtube, FileMusic, ArrowRight } from "lucide-react";
+import { Sliders, Youtube, FileMusic, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,29 +7,24 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Tonewave — AI music, stems and synced guitar tabs" },
+      { title: "Tonewave — Stems, slow-down and synced guitar tabs" },
       {
         name: "description",
         content:
-          "Generate songs with Suno, separate vocals, slow down YouTube videos and practice with synchronized Songsterr tabs and PDF export.",
+          "Separate vocals, slow down YouTube videos without changing pitch, and practice with synchronized Songsterr tabs exported to PDF.",
       },
     ],
   }),
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
     if (data.session) {
-      throw redirect({ to: "/studio" });
+      throw redirect({ to: "/practice" });
     }
   },
   component: Landing,
 });
 
 const FEATURES = [
-  {
-    icon: Wand2,
-    title: "Generate with Suno",
-    body: "Prompt-to-song, custom lyrics, instrumental, V4 → V5.5. Stream output in seconds, watermark-free.",
-  },
   {
     icon: Sliders,
     title: "Moises-style stems",
@@ -55,16 +50,15 @@ function Landing() {
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full bg-primary glow-primary" />
-              Suno + Moises + Songsterr, in one app
+              Moises + Songsterr, in one app
             </span>
             <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-6xl">
-              Make music. <span className="text-gradient">Slow it down.</span>{" "}
-              Play along.
+              Slow it down. <span className="text-gradient">Play along.</span>
             </h1>
             <p className="mt-5 text-lg text-muted-foreground">
-              Generate songs with AI, separate vocals, slow down any YouTube
-              video without changing pitch, and practice with guitar tabs that
-              follow the original audio note by note.
+              Separate vocals, slow down any YouTube video without changing
+              pitch, and practice with guitar tabs that follow the original
+              audio note by note.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button asChild size="lg" className="glow-primary">
@@ -80,7 +74,8 @@ function Landing() {
         </div>
 
         <div className="mx-auto max-w-6xl px-6 pb-24">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
             {FEATURES.map((f) => {
               const Icon = f.icon;
               return (

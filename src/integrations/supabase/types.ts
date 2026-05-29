@@ -143,78 +143,6 @@ export type Database = {
         }
         Relationships: []
       }
-      tracks: {
-        Row: {
-          audio_url: string | null
-          created_at: string
-          duration_seconds: number | null
-          error_message: string | null
-          id: string
-          image_url: string | null
-          instrumental: boolean
-          instrumental_url: string | null
-          lyrics: string | null
-          model: string | null
-          prompt: string | null
-          status: Database["public"]["Enums"]["track_status"]
-          stream_audio_url: string | null
-          style: string | null
-          suno_audio_id: string | null
-          suno_task_id: string | null
-          title: string | null
-          updated_at: string
-          user_id: string
-          video_url: string | null
-          vocal_url: string | null
-        }
-        Insert: {
-          audio_url?: string | null
-          created_at?: string
-          duration_seconds?: number | null
-          error_message?: string | null
-          id?: string
-          image_url?: string | null
-          instrumental?: boolean
-          instrumental_url?: string | null
-          lyrics?: string | null
-          model?: string | null
-          prompt?: string | null
-          status?: Database["public"]["Enums"]["track_status"]
-          stream_audio_url?: string | null
-          style?: string | null
-          suno_audio_id?: string | null
-          suno_task_id?: string | null
-          title?: string | null
-          updated_at?: string
-          user_id: string
-          video_url?: string | null
-          vocal_url?: string | null
-        }
-        Update: {
-          audio_url?: string | null
-          created_at?: string
-          duration_seconds?: number | null
-          error_message?: string | null
-          id?: string
-          image_url?: string | null
-          instrumental?: boolean
-          instrumental_url?: string | null
-          lyrics?: string | null
-          model?: string | null
-          prompt?: string | null
-          status?: Database["public"]["Enums"]["track_status"]
-          stream_audio_url?: string | null
-          style?: string | null
-          suno_audio_id?: string | null
-          suno_task_id?: string | null
-          title?: string | null
-          updated_at?: string
-          user_id?: string
-          video_url?: string | null
-          vocal_url?: string | null
-        }
-        Relationships: []
-      }
       user_roles: {
         Row: {
           created_at: string
@@ -252,7 +180,6 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       tab_source: "songsterr" | "ai_local" | "manual"
-      track_status: "pending" | "processing" | "complete" | "error"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -382,7 +309,6 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       tab_source: ["songsterr", "ai_local", "manual"],
-      track_status: ["pending", "processing", "complete", "error"],
     },
   },
 } as const

@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS public.tracks CASCADE;
+DROP TYPE IF EXISTS public.track_status CASCADE;

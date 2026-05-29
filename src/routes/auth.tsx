@@ -14,7 +14,7 @@ export const Route = createFileRoute("/auth")({
   }),
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/studio" });
+    if (data.session) throw redirect({ to: "/practice" });
   },
   component: AuthPage,
 });
@@ -35,7 +35,7 @@ function AuthPage() {
       return;
     }
     toast.success("Welcome back");
-    router.navigate({ to: "/studio" });
+    router.navigate({ to: "/practice" });
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -44,7 +44,7 @@ function AuthPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/studio` },
+      options: { emailRedirectTo: `${window.location.origin}/practice` },
     });
     setLoading(false);
     if (error) {
