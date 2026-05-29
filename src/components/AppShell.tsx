@@ -1,10 +1,9 @@
 import { Link, useRouter } from "@tanstack/react-router";
-import { Music2, Library, Wand2, LogOut, Mic2 } from "lucide-react";
+import { Music2, Library, LogOut, Mic2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut, useAuth } from "@/lib/auth";
 
 const NAV = [
-  { to: "/studio", label: "Studio", icon: Wand2 },
   { to: "/practice", label: "Practice", icon: Mic2 },
   { to: "/library", label: "Library", icon: Library },
 ] as const;
