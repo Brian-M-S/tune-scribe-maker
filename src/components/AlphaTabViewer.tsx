@@ -20,12 +20,13 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
   const apiRef = useRef<unknown>(null);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [tracks, setTracks] = useState<Array<{ index: number; name: string; tuning: string }>>([]);
+
   useEffect(() => {
     let disposed = false;
     // alphaTab types aren't exported cleanly; treat as any inside this effect
     let api: any = null;
 
-    let api: { destroy?: () => void } | null = null;
 
     (async () => {
       if (!mountRef.current) return;
