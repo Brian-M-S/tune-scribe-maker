@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { Wand2, Sliders, Youtube, FileMusic, ArrowRight } from "lucide-react";
+import { Sliders, Youtube, FileMusic, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,29 +7,24 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Tonewave — AI music, stems and synced guitar tabs" },
+      { title: "Tonewave — Stems, slow-down and synced guitar tabs" },
       {
         name: "description",
         content:
-          "Generate songs with Suno, separate vocals, slow down YouTube videos and practice with synchronized Songsterr tabs and PDF export.",
+          "Separate vocals, slow down YouTube videos without changing pitch, and practice with synchronized Songsterr tabs exported to PDF.",
       },
     ],
   }),
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
     if (data.session) {
-      throw redirect({ to: "/studio" });
+      throw redirect({ to: "/practice" });
     }
   },
   component: Landing,
 });
 
 const FEATURES = [
-  {
-    icon: Wand2,
-    title: "Generate with Suno",
-    body: "Prompt-to-song, custom lyrics, instrumental, V4 → V5.5. Stream output in seconds, watermark-free.",
-  },
   {
     icon: Sliders,
     title: "Moises-style stems",
@@ -46,10 +41,6 @@ const FEATURES = [
     body: "Find the tab, lock it to the original audio like Songsterr, and export to PDF in one click.",
   },
 ];
-
-function Landing() {
-  return (
-    <AppShell>
       <section className="relative overflow-hidden">
         <div className="mx-auto max-w-6xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">
           <div className="mx-auto max-w-3xl text-center">
