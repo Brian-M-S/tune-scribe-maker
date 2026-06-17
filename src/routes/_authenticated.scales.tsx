@@ -104,7 +104,7 @@ function ScalesPage() {
 
           <Field label="Escala">
             <select
-              value={safeScale as string}
+              value={scaleName}
               onChange={(e) => setScaleName(e.target.value as any)}
               className="w-full rounded-md border border-border/60 bg-background/60 px-3 py-2 text-sm"
             >
