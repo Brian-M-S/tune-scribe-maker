@@ -1,11 +1,13 @@
 import { Link, useRouter } from "@tanstack/react-router";
-import { Music2, Library, LogOut, Mic2 } from "lucide-react";
+import { Music2, Library, LogOut, Mic2, Hand, UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut, useAuth } from "@/lib/auth";
 
 const NAV = [
-  { to: "/practice", label: "Practice", icon: Mic2 },
-  { to: "/library", label: "Library", icon: Library },
+  { to: "/practice", label: "Practica", icon: Mic2 },
+  { to: "/scales", label: "Escalas", icon: Hand },
+  { to: "/library", label: "Librería", icon: Library },
+  { to: "/profile", label: "Perfil", icon: UserCircle },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -44,30 +46,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-2">
             {user ? (
-              <>
-                <span className="hidden text-sm text-muted-foreground sm:inline">
-                  {user.email}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={async () => {
-                    await signOut();
-                    router.navigate({ to: "/" });
-                  }}
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={async () => {
+                  await signOut();
+                  router.navigate({ to: "/" });
+                }}
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
             ) : (
               <Button asChild size="sm">
-                <Link to="/auth">Sign in</Link>
+                <Link to="/auth">Entrar</Link>
               </Button>
             )}
           </div>
         </div>
 
-        {/* Mobile nav */}
         <nav className="flex md:hidden items-center gap-1 px-3 pb-3 overflow-x-auto">
           {NAV.map((item) => {
             const Icon = item.icon;
@@ -87,7 +83,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </header>
       <main className="flex-1">{children}</main>
       <footer className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-        Built with Lovable · alphaTab · Songsterr
+        Tonewave · alphaTab · Songsterr
       </footer>
     </div>
   );
