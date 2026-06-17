@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedScalesRouteImport } from './routes/_authenticated.scales'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as AuthenticatedPracticeRouteImport } from './routes/_authenticated.practice'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated.library'
 import { Route as AuthenticatedTabsSongIdRouteImport } from './routes/_authenticated.tabs.$songId'
@@ -29,6 +31,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedScalesRoute = AuthenticatedScalesRouteImport.update({
+  id: '/scales',
+  path: '/scales',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedPracticeRoute = AuthenticatedPracticeRouteImport.update({
   id: '/practice',
@@ -51,6 +63,8 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/practice': typeof AuthenticatedPracticeRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/scales': typeof AuthenticatedScalesRoute
   '/tabs/$songId': typeof AuthenticatedTabsSongIdRoute
 }
 export interface FileRoutesByTo {
@@ -58,6 +72,8 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/practice': typeof AuthenticatedPracticeRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/scales': typeof AuthenticatedScalesRoute
   '/tabs/$songId': typeof AuthenticatedTabsSongIdRoute
 }
 export interface FileRoutesById {
@@ -67,13 +83,29 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/practice': typeof AuthenticatedPracticeRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/scales': typeof AuthenticatedScalesRoute
   '/_authenticated/tabs/$songId': typeof AuthenticatedTabsSongIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/library' | '/practice' | '/tabs/$songId'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/library'
+    | '/practice'
+    | '/profile'
+    | '/scales'
+    | '/tabs/$songId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/library' | '/practice' | '/tabs/$songId'
+  to:
+    | '/'
+    | '/auth'
+    | '/library'
+    | '/practice'
+    | '/profile'
+    | '/scales'
+    | '/tabs/$songId'
   id:
     | '__root__'
     | '/'
@@ -81,6 +113,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/library'
     | '/_authenticated/practice'
+    | '/_authenticated/profile'
+    | '/_authenticated/scales'
     | '/_authenticated/tabs/$songId'
   fileRoutesById: FileRoutesById
 }
@@ -113,6 +147,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/scales': {
+      id: '/_authenticated/scales'
+      path: '/scales'
+      fullPath: '/scales'
+      preLoaderRoute: typeof AuthenticatedScalesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/practice': {
       id: '/_authenticated/practice'
       path: '/practice'
@@ -140,12 +188,16 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedPracticeRoute: typeof AuthenticatedPracticeRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedScalesRoute: typeof AuthenticatedScalesRoute
   AuthenticatedTabsSongIdRoute: typeof AuthenticatedTabsSongIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedPracticeRoute: AuthenticatedPracticeRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedScalesRoute: AuthenticatedScalesRoute,
   AuthenticatedTabsSongIdRoute: AuthenticatedTabsSongIdRoute,
 }
 

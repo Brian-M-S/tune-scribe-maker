@@ -45,13 +45,10 @@ function ScalesPage() {
   const [instrument, setInstrument] = useState<"guitar" | "piano">("guitar");
   const [tuningKey, setTuningKey] = useState(Object.keys(TUNINGS)[0]);
   const [root, setRoot] = useState<(typeof NOTES)[number]>("A");
-  const [scaleName, setScaleName] = useState<keyof typeof SCALES>("Menor pentatónica" as any);
-
-  // sanitize default
-  const safeScale = SCALES[scaleName as string] ? scaleName : "Pentatónica menor";
+  const [scaleName, setScaleName] = useState<string>("Pentatónica menor");
 
   const rootIdx = NOTES.indexOf(root);
-  const intervals = SCALES[safeScale as string];
+  const intervals = SCALES[scaleName] ?? SCALES["Mayor"];
   const noteSet = useMemo(() => buildScaleSet(rootIdx, intervals), [rootIdx, intervals]);
 
   return (
