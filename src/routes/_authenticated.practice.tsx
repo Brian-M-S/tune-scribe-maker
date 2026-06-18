@@ -142,7 +142,11 @@ function PracticePage() {
           </div>
         )}
 
-        {m.data && allResults.length === 0 && (
+        {m.data?.error && (
+          <p className="text-sm text-destructive">⚠ {m.data.error}</p>
+        )}
+
+        {m.data && !m.data.error && allResults.length === 0 && (
           <p className="text-sm text-muted-foreground">No results.</p>
         )}
 
