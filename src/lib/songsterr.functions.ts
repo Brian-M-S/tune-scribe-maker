@@ -25,28 +25,62 @@ export const searchSongsterr = createServerFn({ method: "POST" })
     z.object({ query: z.string().min(1).max(200) }).parse(input),
   )
   .handler(async ({ data }) => {
-    const url = `https://www.songsterr.com/a/ra/songs.json?pattern=${encodeURIComponent(data.query)}&size=50`;
-    const res = await fetch(url, {
-      headers: { Accept: "application/json", "User-Agent": "Tonewave/1.0" },
-    });
-    if (!res.ok) {
-      return { results: [] as SongsterrResult[], error: `Songsterr error ${res.status}` };
-    }
-    const raw = (await res.json()) as Array<{
-      id: number;
-      title: string;
-      artist?: { name?: string };
-      tabTypes?: string[];
-    }>;
-    const results: SongsterrResult[] = raw.map((r) => {
-      const artist = r.artist?.name ?? "Unknown";
+    const url = `https://www.songsterr.com/api/songs?pattern=${encodeURIComponent(data.query)}&size=50`;
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Accept-Language": "en-US,en;q=0.9",
+          "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+          Referer: "https://www.songsterr.com/",
+        },
+      });
+    } catch (e) {
       return {
-        id: r.id,
+        results: [] as SongsterrResult[],
+        error: `Network error: ${e instanceof Error ? e.message : "unknown"}`,
+      };
+    }
+    const text = await res.text();
+    if (!res.ok) {
+      console.error("[songsterr] status", res.status, text.slice(0, 200));
+      return { results: [] as SongsterrResult[], error: `Songsterr ${res.status}` };
+    }
+    let raw: Array<{
+      songId: number;
+      title: string;
+      artist?: string;
+      tracks?: Array<{ instrument?: string }>;
+    }>;
+    try {
+      raw = JSON.parse(text);
+    } catch {
+      console.error("[songsterr] non-JSON response", text.slice(0, 200));
+      return {
+        results: [] as SongsterrResult[],
+        error: "Songsterr devolvió una respuesta inesperada",
+      };
+    }
+    const results: SongsterrResult[] = raw.map((r) => {
+      const artist = r.artist ?? "Unknown";
+      const types = new Set<string>();
+      for (const t of r.tracks ?? []) {
+        const ins = (t.instrument ?? "").toLowerCase();
+        if (ins.includes("bass")) types.add("Bass");
+        else if (ins.includes("drum") || ins.includes("percussion")) types.add("Drums");
+        else if (ins.includes("vocal") || ins.includes("sax")) types.add("Vocal");
+        else if (ins.includes("guitar")) types.add("Guitar");
+        else if (ins) types.add("Other");
+      }
+      return {
+        id: r.songId,
         title: r.title,
         artist,
-        url: `https://www.songsterr.com/a/wsa/${slugify(artist)}-${slugify(r.title)}-tab-s${r.id}`,
+        url: `https://www.songsterr.com/a/wsa/${slugify(artist)}-${slugify(r.title)}-tab-s${r.songId}`,
         ugSearchUrl: `https://www.ultimate-guitar.com/search.php?search_type=title&value=${encodeURIComponent(`${artist} ${r.title}`)}`,
-        tabTypes: r.tabTypes ?? [],
+        tabTypes: Array.from(types),
       };
     });
     return { results, error: null as string | null };
