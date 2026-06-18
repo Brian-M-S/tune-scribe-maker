@@ -143,6 +143,39 @@ export type Database = {
         }
         Relationships: []
       }
+      service_health: {
+        Row: {
+          checked_at: string
+          endpoint: string
+          id: string
+          ok: boolean
+          sample: string | null
+          schema_ok: boolean
+          service: string
+          status_code: number | null
+        }
+        Insert: {
+          checked_at?: string
+          endpoint: string
+          id?: string
+          ok: boolean
+          sample?: string | null
+          schema_ok?: boolean
+          service: string
+          status_code?: number | null
+        }
+        Update: {
+          checked_at?: string
+          endpoint?: string
+          id?: string
+          ok?: boolean
+          sample?: string | null
+          schema_ok?: boolean
+          service?: string
+          status_code?: number | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -179,7 +212,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      tab_source: "songsterr" | "ai_local" | "manual"
+      tab_source: "songsterr" | "ai_local" | "manual" | "upload"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -308,7 +341,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
-      tab_source: ["songsterr", "ai_local", "manual"],
+      tab_source: ["songsterr", "ai_local", "manual", "upload"],
     },
   },
 } as const
