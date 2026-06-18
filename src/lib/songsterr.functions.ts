@@ -25,7 +25,7 @@ export const searchSongsterr = createServerFn({ method: "POST" })
     z.object({ query: z.string().min(1).max(200) }).parse(input),
   )
   .handler(async ({ data }) => {
-    const url = `https://www.songsterr.com/a/ra/songs.json?pattern=${encodeURIComponent(data.query)}&size=50`;
+    const url = `https://www.songsterr.com/api/songs?pattern=${encodeURIComponent(data.query)}&size=50`;
     let res: Response;
     try {
       res = await fetch(url, {
@@ -48,7 +48,12 @@ export const searchSongsterr = createServerFn({ method: "POST" })
       console.error("[songsterr] status", res.status, text.slice(0, 200));
       return { results: [] as SongsterrResult[], error: `Songsterr ${res.status}` };
     }
-    let raw: Array<{ id: number; title: string; artist?: { name?: string }; tabTypes?: string[] }>;
+    let raw: Array<{
+      songId: number;
+      title: string;
+      artist?: string;
+      tracks?: Array<{ instrument?: string }>;
+    }>;
     try {
       raw = JSON.parse(text);
     } catch {
@@ -59,14 +64,23 @@ export const searchSongsterr = createServerFn({ method: "POST" })
       };
     }
     const results: SongsterrResult[] = raw.map((r) => {
-      const artist = r.artist?.name ?? "Unknown";
+      const artist = r.artist ?? "Unknown";
+      const types = new Set<string>();
+      for (const t of r.tracks ?? []) {
+        const ins = (t.instrument ?? "").toLowerCase();
+        if (ins.includes("bass")) types.add("Bass");
+        else if (ins.includes("drum") || ins.includes("percussion")) types.add("Drums");
+        else if (ins.includes("vocal") || ins.includes("sax")) types.add("Vocal");
+        else if (ins.includes("guitar")) types.add("Guitar");
+        else if (ins) types.add("Other");
+      }
       return {
-        id: r.id,
+        id: r.songId,
         title: r.title,
         artist,
-        url: `https://www.songsterr.com/a/wsa/${slugify(artist)}-${slugify(r.title)}-tab-s${r.id}`,
+        url: `https://www.songsterr.com/a/wsa/${slugify(artist)}-${slugify(r.title)}-tab-s${r.songId}`,
         ugSearchUrl: `https://www.ultimate-guitar.com/search.php?search_type=title&value=${encodeURIComponent(`${artist} ${r.title}`)}`,
-        tabTypes: r.tabTypes ?? [],
+        tabTypes: Array.from(types),
       };
     });
     return { results, error: null as string | null };
