@@ -26,14 +26,67 @@ const SCALES: Record<string, number[]> = {
   Locrio: [0, 1, 3, 5, 6, 8, 10],
 };
 
-const TUNINGS: Record<string, number[]> = {
-  // Standard guitar tuning (low to high), MIDI numbers
-  "Guitarra estándar (E A D G B E)": [40, 45, 50, 55, 59, 64],
-  "Drop D (D A D G B E)": [38, 45, 50, 55, 59, 64],
-  "Half-step down (Eb)": [39, 44, 49, 54, 58, 63],
-  "Open G (D G D G B D)": [38, 43, 50, 55, 59, 62],
-  "Bajo 4 cuerdas (E A D G)": [28, 33, 38, 43],
-};
+// MIDI numbers low → high. C4 = 60, E2 = 40.
+const TUNING_GROUPS: { group: string; tunings: { name: string; midi: number[] }[] }[] = [
+  {
+    group: "Estándar y semitonos",
+    tunings: [
+      { name: "Estándar (E A D G B E)", midi: [40, 45, 50, 55, 59, 64] },
+      { name: "Eb / Half-step down (Eb Ab Db Gb Bb Eb)", midi: [39, 44, 49, 54, 58, 63] },
+      { name: "D estándar / Whole-step down (D G C F A D)", midi: [38, 43, 48, 53, 57, 62] },
+      { name: "C# estándar (C# F# B E G# C#)", midi: [37, 42, 47, 52, 56, 61] },
+      { name: "C estándar (C F Bb Eb G C)", midi: [36, 41, 46, 51, 55, 60] },
+      { name: "B estándar (B E A D F# B)", midi: [35, 40, 45, 50, 54, 59] },
+    ],
+  },
+  {
+    group: "Drop tunings",
+    tunings: [
+      { name: "Drop D (D A D G B E)", midi: [38, 45, 50, 55, 59, 64] },
+      { name: "Drop C# (C# G# C# F# A# D#)", midi: [37, 44, 49, 54, 58, 63] },
+      { name: "Drop C (C G C F A D)", midi: [36, 43, 48, 53, 57, 62] },
+      { name: "Drop B (B F# B E G# C#)", midi: [35, 42, 47, 52, 56, 61] },
+      { name: "Drop A (A E A D F# B)", midi: [33, 40, 45, 50, 54, 59] },
+    ],
+  },
+  {
+    group: "Open tunings (slide / folk)",
+    tunings: [
+      { name: "Open D (D A D F# A D)", midi: [38, 45, 50, 54, 57, 62] },
+      { name: "Open D minor (D A D F A D)", midi: [38, 45, 50, 53, 57, 62] },
+      { name: "Open E (E B E G# B E)", midi: [40, 47, 52, 56, 59, 64] },
+      { name: "Open G (D G D G B D)", midi: [38, 43, 50, 55, 59, 62] },
+      { name: "Open G minor (D G D G Bb D)", midi: [38, 43, 50, 55, 58, 62] },
+      { name: "Open A (E A E A C# E)", midi: [40, 45, 52, 57, 61, 64] },
+      { name: "Open C (C G C G C E)", midi: [36, 43, 48, 55, 60, 64] },
+      { name: "DADGAD (D A D G A D)", midi: [38, 45, 50, 55, 57, 62] },
+      { name: "Double Drop D (D A D G B D)", midi: [38, 45, 50, 55, 59, 62] },
+    ],
+  },
+  {
+    group: "Extendidas y alternativas",
+    tunings: [
+      { name: "7 cuerdas estándar (B E A D G B E)", midi: [35, 40, 45, 50, 55, 59, 64] },
+      { name: "7 cuerdas Drop A (A E A D G B E)", midi: [33, 40, 45, 50, 55, 59, 64] },
+      { name: "8 cuerdas estándar (F# B E A D G B E)", midi: [30, 35, 40, 45, 50, 55, 59, 64] },
+      { name: "Nashville / High-strung", midi: [52, 57, 62, 67, 59, 64] },
+      { name: "All-fourths (E A D G C F)", midi: [40, 45, 50, 55, 60, 65] },
+    ],
+  },
+  {
+    group: "Bajo",
+    tunings: [
+      { name: "Bajo 4 estándar (E A D G)", midi: [28, 33, 38, 43] },
+      { name: "Bajo 4 Drop D (D A D G)", midi: [26, 33, 38, 43] },
+      { name: "Bajo 5 (B E A D G)", midi: [23, 28, 33, 38, 43] },
+      { name: "Bajo 6 (B E A D G C)", midi: [23, 28, 33, 38, 43, 48] },
+    ],
+  },
+];
+
+const TUNINGS: Record<string, number[]> = Object.fromEntries(
+  TUNING_GROUPS.flatMap((g) => g.tunings.map((t) => [t.name, t.midi] as const)),
+);
 
 const FRETS = 16;
 
