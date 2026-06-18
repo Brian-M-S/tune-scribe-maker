@@ -26,18 +26,38 @@ export const searchSongsterr = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const url = `https://www.songsterr.com/a/ra/songs.json?pattern=${encodeURIComponent(data.query)}&size=50`;
-    const res = await fetch(url, {
-      headers: { Accept: "application/json", "User-Agent": "Tonewave/1.0" },
-    });
-    if (!res.ok) {
-      return { results: [] as SongsterrResult[], error: `Songsterr error ${res.status}` };
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Accept-Language": "en-US,en;q=0.9",
+          "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+          Referer: "https://www.songsterr.com/",
+        },
+      });
+    } catch (e) {
+      return {
+        results: [] as SongsterrResult[],
+        error: `Network error: ${e instanceof Error ? e.message : "unknown"}`,
+      };
     }
-    const raw = (await res.json()) as Array<{
-      id: number;
-      title: string;
-      artist?: { name?: string };
-      tabTypes?: string[];
-    }>;
+    const text = await res.text();
+    if (!res.ok) {
+      console.error("[songsterr] status", res.status, text.slice(0, 200));
+      return { results: [] as SongsterrResult[], error: `Songsterr ${res.status}` };
+    }
+    let raw: Array<{ id: number; title: string; artist?: { name?: string }; tabTypes?: string[] }>;
+    try {
+      raw = JSON.parse(text);
+    } catch {
+      console.error("[songsterr] non-JSON response", text.slice(0, 200));
+      return {
+        results: [] as SongsterrResult[],
+        error: "Songsterr devolvió una respuesta inesperada",
+      };
+    }
     const results: SongsterrResult[] = raw.map((r) => {
       const artist = r.artist?.name ?? "Unknown";
       return {
