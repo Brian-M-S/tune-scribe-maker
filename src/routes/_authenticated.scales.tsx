@@ -176,10 +176,14 @@ function ScalesPage() {
                 onChange={(e) => setTuningKey(e.target.value)}
                 className="w-full rounded-md border border-border/60 bg-background/60 px-3 py-2 text-sm"
               >
-                {Object.keys(TUNINGS).map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
+                {TUNING_GROUPS.map((g) => (
+                  <optgroup key={g.group} label={g.group}>
+                    {g.tunings.map((t) => (
+                      <option key={t.name} value={t.name}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
             </Field>
