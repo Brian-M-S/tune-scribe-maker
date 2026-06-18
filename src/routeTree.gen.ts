@@ -17,6 +17,8 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedPracticeRouteImport } from './routes/_authenticated.practice'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated.library'
 import { Route as AuthenticatedTabsSongIdRouteImport } from './routes/_authenticated.tabs.$songId'
+import { Route as ApiPublicHooksSongsterrHealthRouteImport } from './routes/api/public/hooks/songsterr-health'
+import { Route as AuthenticatedTabsUploadedIdRouteImport } from './routes/_authenticated.tabs.uploaded.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -57,6 +59,18 @@ const AuthenticatedTabsSongIdRoute = AuthenticatedTabsSongIdRouteImport.update({
   path: '/tabs/$songId',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const ApiPublicHooksSongsterrHealthRoute =
+  ApiPublicHooksSongsterrHealthRouteImport.update({
+    id: '/api/public/hooks/songsterr-health',
+    path: '/api/public/hooks/songsterr-health',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedTabsUploadedIdRoute =
+  AuthenticatedTabsUploadedIdRouteImport.update({
+    id: '/tabs/uploaded/$id',
+    path: '/tabs/uploaded/$id',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +80,8 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/scales': typeof AuthenticatedScalesRoute
   '/tabs/$songId': typeof AuthenticatedTabsSongIdRoute
+  '/tabs/uploaded/$id': typeof AuthenticatedTabsUploadedIdRoute
+  '/api/public/hooks/songsterr-health': typeof ApiPublicHooksSongsterrHealthRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +91,8 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/scales': typeof AuthenticatedScalesRoute
   '/tabs/$songId': typeof AuthenticatedTabsSongIdRoute
+  '/tabs/uploaded/$id': typeof AuthenticatedTabsUploadedIdRoute
+  '/api/public/hooks/songsterr-health': typeof ApiPublicHooksSongsterrHealthRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +104,8 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/scales': typeof AuthenticatedScalesRoute
   '/_authenticated/tabs/$songId': typeof AuthenticatedTabsSongIdRoute
+  '/_authenticated/tabs/uploaded/$id': typeof AuthenticatedTabsUploadedIdRoute
+  '/api/public/hooks/songsterr-health': typeof ApiPublicHooksSongsterrHealthRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +117,8 @@ export interface FileRouteTypes {
     | '/profile'
     | '/scales'
     | '/tabs/$songId'
+    | '/tabs/uploaded/$id'
+    | '/api/public/hooks/songsterr-health'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +128,8 @@ export interface FileRouteTypes {
     | '/profile'
     | '/scales'
     | '/tabs/$songId'
+    | '/tabs/uploaded/$id'
+    | '/api/public/hooks/songsterr-health'
   id:
     | '__root__'
     | '/'
@@ -116,12 +140,15 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/scales'
     | '/_authenticated/tabs/$songId'
+    | '/_authenticated/tabs/uploaded/$id'
+    | '/api/public/hooks/songsterr-health'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHooksSongsterrHealthRoute: typeof ApiPublicHooksSongsterrHealthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -182,6 +209,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTabsSongIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/public/hooks/songsterr-health': {
+      id: '/api/public/hooks/songsterr-health'
+      path: '/api/public/hooks/songsterr-health'
+      fullPath: '/api/public/hooks/songsterr-health'
+      preLoaderRoute: typeof ApiPublicHooksSongsterrHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/tabs/uploaded/$id': {
+      id: '/_authenticated/tabs/uploaded/$id'
+      path: '/tabs/uploaded/$id'
+      fullPath: '/tabs/uploaded/$id'
+      preLoaderRoute: typeof AuthenticatedTabsUploadedIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -191,6 +232,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedScalesRoute: typeof AuthenticatedScalesRoute
   AuthenticatedTabsSongIdRoute: typeof AuthenticatedTabsSongIdRoute
+  AuthenticatedTabsUploadedIdRoute: typeof AuthenticatedTabsUploadedIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -199,6 +241,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedScalesRoute: AuthenticatedScalesRoute,
   AuthenticatedTabsSongIdRoute: AuthenticatedTabsSongIdRoute,
+  AuthenticatedTabsUploadedIdRoute: AuthenticatedTabsUploadedIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -209,6 +252,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHooksSongsterrHealthRoute: ApiPublicHooksSongsterrHealthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

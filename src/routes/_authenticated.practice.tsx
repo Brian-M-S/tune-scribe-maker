@@ -189,6 +189,7 @@ function PracticePage() {
 }
 
 function ResultRow({ r }: { r: SongsterrResult }) {
+  const isUg = r.source === "ug";
   return (
     <li className="flex items-center justify-between gap-3 p-3">
       <div className="min-w-0">
@@ -196,27 +197,32 @@ function ResultRow({ r }: { r: SongsterrResult }) {
         <p className="truncate text-xs text-muted-foreground">
           {r.artist}
           {r.tabTypes.length > 0 && <span> · {r.tabTypes.join(", ")}</span>}
+          {isUg && <span> · fallback</span>}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-1">
-        <Button asChild size="sm" variant="secondary">
-          <Link
-            to="/tabs/$songId"
-            params={{ songId: String(r.id) }}
-            search={{ title: r.title, artist: r.artist }}
+        {!isUg && (
+          <Button asChild size="sm" variant="secondary">
+            <Link
+              to="/tabs/$songId"
+              params={{ songId: String(r.id) }}
+              search={{ title: r.title, artist: r.artist }}
+            >
+              <Music className="h-3.5 w-3.5 mr-1" /> Player
+            </Link>
+          </Button>
+        )}
+        {!isUg && (
+          <a
+            href={r.url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-background/60"
+            title="Open on Songsterr"
           >
-            <Music className="h-3.5 w-3.5 mr-1" /> Player
-          </Link>
-        </Button>
-        <a
-          href={r.url}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-background/60"
-          title="Open on Songsterr"
-        >
-          Songsterr <ExternalLink className="h-3 w-3" />
-        </a>
+            Songsterr <ExternalLink className="h-3 w-3" />
+          </a>
+        )}
         <a
           href={r.ugSearchUrl}
           target="_blank"
