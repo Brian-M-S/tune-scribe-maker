@@ -153,17 +153,16 @@ export const getSongsterrSource = createServerFn({ method: "POST" })
   .inputValidator((input: { songId: number }) =>
     z.object({ songId: z.number().int().positive() }).parse(input),
   )
-  .handler(async ({ data }) => {
-    const res = await fetch(
-      `https://www.songsterr.com/a/ra/song/${data.songId}/revisions.json`,
-      { headers: { Accept: "application/json", "User-Agent": "Tonewave/1.0" } },
-    );
-    if (!res.ok) {
-      return { source: null as string | null, error: `Songsterr error ${res.status}` };
-    }
-    const revisions = (await res.json()) as Array<{ source?: string }>;
-    const source = revisions.find((r) => r.source)?.source ?? null;
-    return { source, error: source ? null : "No tab source available" };
+  .handler(async ({ data: _data }) => {
+    // Songsterr removed the public binary tab endpoint (revisions.json → 404,
+    // CDN now serves signed per-track assets). The in-app player cannot fetch
+    // the .gp file anymore — callers should open Songsterr directly or use
+    // an uploaded local tab from the Library.
+    return {
+      source: null as string | null,
+      error:
+        "Songsterr ya no expone el archivo de tablatura públicamente. Ábrela en Songsterr o sube tu propio .gp en la Biblioteca.",
+    };
   });
 
 export const fetchTabBytes = createServerFn({ method: "POST" })

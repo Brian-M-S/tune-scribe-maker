@@ -23,6 +23,7 @@ function AuthPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -40,6 +41,14 @@ function AuthPage() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
@@ -126,6 +135,20 @@ function AuthPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pw-up2">Confirm password</Label>
+                  <Input
+                    id="pw-up2"
+                    type="password"
+                    required
+                    minLength={6}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  {confirmPassword.length > 0 && confirmPassword !== password && (
+                    <p className="text-xs text-destructive">Passwords do not match</p>
+                  )}
                 </div>
                 <Button type="submit" disabled={loading} className="w-full">
                   {loading ? "Creating account…" : "Create account"}

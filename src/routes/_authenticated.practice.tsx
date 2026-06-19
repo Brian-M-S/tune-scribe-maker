@@ -1,12 +1,17 @@
-import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMutation } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Mic2, Search, ExternalLink, Music, ArrowUpDown } from "lucide-react";
+import { Mic2, Search, ExternalLink, ArrowUpDown, History, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { searchSongsterr, type SongsterrResult } from "@/lib/songsterr.functions";
+import {
+  listSearchHistory,
+  addSearchHistory,
+  deleteSearchHistory,
+} from "@/lib/search-history.functions";
 
 export const Route = createFileRoute("/_authenticated/practice")({
   head: () => ({ meta: [{ title: "Practice — Tonewave" }] }),
@@ -21,11 +26,47 @@ function PracticePage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [groupByArtist, setGroupByArtist] = useState(true);
 
+  const qc = useQueryClient();
   const search = useServerFn(searchSongsterr);
+  const listHistory = useServerFn(listSearchHistory);
+  const addHistory = useServerFn(addSearchHistory);
+  const deleteHistory = useServerFn(deleteSearchHistory);
+
+  const history = useQuery({
+    queryKey: ["search-history"],
+    queryFn: () => listHistory(),
+  });
+
   const m = useMutation({
     mutationFn: (q: string) => search({ data: { query: q } }),
     onError: (e) => toast.error(e instanceof Error ? e.message : "Search failed"),
   });
+
+  const runSearch = (q: string) => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    setQuery(trimmed);
+    m.mutate(trimmed);
+    addHistory({ data: { query: trimmed } })
+      .then(() => qc.invalidateQueries({ queryKey: ["search-history"] }))
+      .catch(() => {});
+  };
+
+  const removeHistoryItem = (id: string) => {
+    deleteHistory({ data: { id } })
+      .then(() => qc.invalidateQueries({ queryKey: ["search-history"] }))
+      .catch(() => {});
+  };
+  const clearHistory = () => {
+    deleteHistory({ data: { all: true } })
+      .then(() => qc.invalidateQueries({ queryKey: ["search-history"] }))
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    // no-op placeholder for future autocomplete
+  }, []);
+
 
   const allResults = m.data?.results ?? [];
 
@@ -66,7 +107,7 @@ function PracticePage() {
         <div>
           <h1 className="text-2xl font-bold">Practice</h1>
           <p className="text-sm text-muted-foreground">
-            Search Songsterr, open the tab in the player, or jump to Ultimate Guitar.
+            Search Songsterr, open the tab there, or jump to Ultimate Guitar. Upload your own .gp file in the Library to use the in-app player.
           </p>
         </div>
       </div>
@@ -75,7 +116,7 @@ function PracticePage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (query.trim()) m.mutate(query.trim());
+            runSearch(query);
           }}
           className="flex gap-2"
         >
@@ -89,6 +130,41 @@ function PracticePage() {
             {m.isPending ? "Searching…" : "Search"}
           </Button>
         </form>
+
+        {(history.data?.items.length ?? 0) > 0 && (
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1">
+                <History className="h-3.5 w-3.5" /> Recent searches
+              </span>
+              <button
+                onClick={clearHistory}
+                className="inline-flex items-center gap-1 hover:text-foreground"
+              >
+                <Trash2 className="h-3 w-3" /> Clear
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {history.data!.items.map((h) => (
+                <span
+                  key={h.id}
+                  className="group inline-flex items-center gap-1 rounded-full bg-background/40 pl-2 pr-1 py-0.5 text-xs hover:bg-background/60"
+                >
+                  <button onClick={() => runSearch(h.query)} className="hover:text-primary">
+                    {h.query}
+                  </button>
+                  <button
+                    onClick={() => removeHistoryItem(h.id)}
+                    aria-label="Remove"
+                    className="opacity-60 hover:opacity-100"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {allResults.length > 0 && (
           <div className="flex flex-wrap items-center gap-3 text-xs">
@@ -180,7 +256,8 @@ function PracticePage() {
         <h2 className="font-semibold text-foreground mb-2">About the catalog</h2>
         <ul className="list-disc list-inside space-y-1">
           <li>Songsterr exposes a free public search; we sort by artist/title and filter by instrument.</li>
-          <li>Album, tuning and ratings are not in the Songsterr search payload — tuning appears once the tab is loaded.</li>
+          <li>Songsterr no longer publishes the binary .gp file, so the in-app player isn't available for their tabs — use the "Songsterr" button to open it there.</li>
+          <li>For the in-app player, upload your own .gp / .gp3-7 / .gpx file in the Library.</li>
           <li>Ultimate Guitar has no public API, so we link to their search instead of embedding.</li>
         </ul>
       </section>
@@ -203,25 +280,10 @@ function ResultRow({ r }: { r: SongsterrResult }) {
       <div className="flex shrink-0 items-center gap-1">
         {!isUg && (
           <Button asChild size="sm" variant="secondary">
-            <Link
-              to="/tabs/$songId"
-              params={{ songId: String(r.id) }}
-              search={{ title: r.title, artist: r.artist }}
-            >
-              <Music className="h-3.5 w-3.5 mr-1" /> Player
-            </Link>
+            <a href={r.url} target="_blank" rel="noreferrer">
+              <ExternalLink className="h-3.5 w-3.5 mr-1" /> Songsterr
+            </a>
           </Button>
-        )}
-        {!isUg && (
-          <a
-            href={r.url}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-background/60"
-            title="Open on Songsterr"
-          >
-            Songsterr <ExternalLink className="h-3 w-3" />
-          </a>
         )}
         <a
           href={r.ugSearchUrl}
