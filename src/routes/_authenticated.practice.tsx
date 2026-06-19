@@ -256,7 +256,8 @@ function PracticePage() {
         <h2 className="font-semibold text-foreground mb-2">About the catalog</h2>
         <ul className="list-disc list-inside space-y-1">
           <li>Songsterr exposes a free public search; we sort by artist/title and filter by instrument.</li>
-          <li>Album, tuning and ratings are not in the Songsterr search payload — tuning appears once the tab is loaded.</li>
+          <li>Songsterr no longer publishes the binary .gp file, so the in-app player isn't available for their tabs — use the "Songsterr" button to open it there.</li>
+          <li>For the in-app player, upload your own .gp / .gp3-7 / .gpx file in the Library.</li>
           <li>Ultimate Guitar has no public API, so we link to their search instead of embedding.</li>
         </ul>
       </section>
