@@ -136,6 +136,20 @@ function AuthPage() {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pw-up2">Confirm password</Label>
+                  <Input
+                    id="pw-up2"
+                    type="password"
+                    required
+                    minLength={6}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  {confirmPassword.length > 0 && confirmPassword !== password && (
+                    <p className="text-xs text-destructive">Passwords do not match</p>
+                  )}
+                </div>
                 <Button type="submit" disabled={loading} className="w-full">
                   {loading ? "Creating account…" : "Create account"}
                 </Button>
