@@ -116,7 +116,7 @@ function PracticePage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (query.trim()) m.mutate(query.trim());
+            runSearch(query);
           }}
           className="flex gap-2"
         >
@@ -130,6 +130,41 @@ function PracticePage() {
             {m.isPending ? "Searching…" : "Search"}
           </Button>
         </form>
+
+        {(history.data?.items.length ?? 0) > 0 && (
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1">
+                <History className="h-3.5 w-3.5" /> Recent searches
+              </span>
+              <button
+                onClick={clearHistory}
+                className="inline-flex items-center gap-1 hover:text-foreground"
+              >
+                <Trash2 className="h-3 w-3" /> Clear
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {history.data!.items.map((h) => (
+                <span
+                  key={h.id}
+                  className="group inline-flex items-center gap-1 rounded-full bg-background/40 pl-2 pr-1 py-0.5 text-xs hover:bg-background/60"
+                >
+                  <button onClick={() => runSearch(h.query)} className="hover:text-primary">
+                    {h.query}
+                  </button>
+                  <button
+                    onClick={() => removeHistoryItem(h.id)}
+                    aria-label="Remove"
+                    className="opacity-60 hover:opacity-100"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {allResults.length > 0 && (
           <div className="flex flex-wrap items-center gap-3 text-xs">
