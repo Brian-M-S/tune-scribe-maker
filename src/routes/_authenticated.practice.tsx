@@ -279,13 +279,9 @@ function ResultRow({ r }: { r: SongsterrResult }) {
       <div className="flex shrink-0 items-center gap-1">
         {!isUg && (
           <Button asChild size="sm" variant="secondary">
-            <Link
-              to="/tabs/$songId"
-              params={{ songId: String(r.id) }}
-              search={{ title: r.title, artist: r.artist }}
-            >
-              <Music className="h-3.5 w-3.5 mr-1" /> Player
-            </Link>
+            <a href={r.url} target="_blank" rel="noreferrer">
+              <ExternalLink className="h-3.5 w-3.5 mr-1" /> Songsterr
+            </a>
           </Button>
         )}
         {!isUg && (
