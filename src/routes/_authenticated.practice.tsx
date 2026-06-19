@@ -107,7 +107,7 @@ function PracticePage() {
         <div>
           <h1 className="text-2xl font-bold">Practice</h1>
           <p className="text-sm text-muted-foreground">
-            Search Songsterr, open the tab in the player, or jump to Ultimate Guitar.
+            Search Songsterr, open the tab there, or jump to Ultimate Guitar. Upload your own .gp file in the Library to use the in-app player.
           </p>
         </div>
       </div>
