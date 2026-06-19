@@ -1,12 +1,17 @@
-import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMutation } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Mic2, Search, ExternalLink, Music, ArrowUpDown } from "lucide-react";
+import { Mic2, Search, ExternalLink, ArrowUpDown, History, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { searchSongsterr, type SongsterrResult } from "@/lib/songsterr.functions";
+import {
+  listSearchHistory,
+  addSearchHistory,
+  deleteSearchHistory,
+} from "@/lib/search-history.functions";
 
 export const Route = createFileRoute("/_authenticated/practice")({
   head: () => ({ meta: [{ title: "Practice — Tonewave" }] }),
@@ -21,11 +26,47 @@ function PracticePage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [groupByArtist, setGroupByArtist] = useState(true);
 
+  const qc = useQueryClient();
   const search = useServerFn(searchSongsterr);
+  const listHistory = useServerFn(listSearchHistory);
+  const addHistory = useServerFn(addSearchHistory);
+  const deleteHistory = useServerFn(deleteSearchHistory);
+
+  const history = useQuery({
+    queryKey: ["search-history"],
+    queryFn: () => listHistory(),
+  });
+
   const m = useMutation({
     mutationFn: (q: string) => search({ data: { query: q } }),
     onError: (e) => toast.error(e instanceof Error ? e.message : "Search failed"),
   });
+
+  const runSearch = (q: string) => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    setQuery(trimmed);
+    m.mutate(trimmed);
+    addHistory({ data: { query: trimmed } })
+      .then(() => qc.invalidateQueries({ queryKey: ["search-history"] }))
+      .catch(() => {});
+  };
+
+  const removeHistoryItem = (id: string) => {
+    deleteHistory({ data: { id } })
+      .then(() => qc.invalidateQueries({ queryKey: ["search-history"] }))
+      .catch(() => {});
+  };
+  const clearHistory = () => {
+    deleteHistory({ data: { all: true } })
+      .then(() => qc.invalidateQueries({ queryKey: ["search-history"] }))
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    // no-op placeholder for future autocomplete
+  }, []);
+
 
   const allResults = m.data?.results ?? [];
 
