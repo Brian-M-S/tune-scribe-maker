@@ -284,17 +284,6 @@ function ResultRow({ r }: { r: SongsterrResult }) {
             </a>
           </Button>
         )}
-        {!isUg && (
-          <a
-            href={r.url}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-background/60"
-            title="Open on Songsterr"
-          >
-            Songsterr <ExternalLink className="h-3 w-3" />
-          </a>
-        )}
         <a
           href={r.ugSearchUrl}
           target="_blank"
