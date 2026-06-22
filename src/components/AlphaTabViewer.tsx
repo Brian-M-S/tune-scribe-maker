@@ -374,17 +374,27 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
           </aside>
         )}
 
-        <div className="flex-1 overflow-hidden bg-white">
-          {!ready && (
-            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Renderizando partitura…
+        <div className="relative flex-1 overflow-hidden bg-white">
+          {loadError ? (
+            <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center text-sm text-destructive">
+              <p className="font-semibold">No se pudo renderizar la tablatura</p>
+              <p className="max-w-md text-xs text-destructive/80">{loadError}</p>
+              <p className="max-w-md text-[11px] text-muted-foreground">
+                Formatos soportados: Guitar Pro 3–7 (.gp3, .gp4, .gp5, .gpx, .gp). Archivos .gp1/.gp2 o exportados desde versiones muy recientes pueden no ser compatibles.
+              </p>
             </div>
-          )}
+          ) : !ready ? (
+            <div className="flex h-full flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Renderizando partitura… {renderProgress > 0 ? `${renderProgress}%` : ""}</span>
+            </div>
+          ) : null}
           <div
             ref={mountRef}
             className="alphatab-surface h-full max-h-[70vh] overflow-auto p-3"
           />
         </div>
+
       </div>
 
       {/* Transport bar */}
