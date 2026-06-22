@@ -19,12 +19,20 @@ export const Route = createFileRoute("/api/public/hooks/songsterr-health")({
 });
 
 async function handler({ request }: { request: Request }) {
-  const expected = process.env.CRON_SECRET;
   const provided = request.headers.get("x-cron-secret");
-  if (!expected || !provided || provided.length !== expected.length) {
+  if (!provided) {
     return new Response("Unauthorized", { status: 401 });
   }
-  // Constant-time-ish compare
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: secretRow, error: secretErr } = await supabaseAdmin
+    .from("app_secrets")
+    .select("value")
+    .eq("name", "cron_secret")
+    .maybeSingle();
+  const expected = secretRow?.value;
+  if (secretErr || !expected || provided.length !== expected.length) {
+    return new Response("Unauthorized", { status: 401 });
+  }
   let diff = 0;
   for (let i = 0; i < expected.length; i++) {
     diff |= expected.charCodeAt(i) ^ provided.charCodeAt(i);
@@ -32,7 +40,6 @@ async function handler({ request }: { request: Request }) {
   if (diff !== 0) {
     return new Response("Unauthorized", { status: 401 });
   }
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const probes = await Promise.all([
     probe("songsterr-new", "https://www.songsterr.com/api/songs?pattern=metallica&size=1", (json) =>
       Array.isArray(json) && (json.length === 0 || typeof json[0]?.songId === "number"),
