@@ -60,6 +60,8 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
   const apiRef = useRef<any>(null);
 
   const [ready, setReady] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [renderProgress, setRenderProgress] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [tracks, setTracks] = useState<TrackInfo[]>([]);
   const [activeTrack, setActiveTrack] = useState<number>(0);
@@ -90,6 +92,7 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
         const settings = {
           core: {
             engine: "svg",
+            useWorkers: true,
             fontDirectory:
               "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.3/dist/font/",
             scriptFile:
@@ -103,7 +106,7 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
               "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.3/dist/soundfont/sonivox.sf2",
             scrollElement: mountRef.current,
           },
-          display: { scale: 1.0 },
+          display: { scale: 1.0, layoutMode: "page" },
         };
 
         api = new AlphaTabApi(mountRef.current, settings);
@@ -111,6 +114,7 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
 
         api.scoreLoaded.on((score: any) => {
           if (disposed) return;
+          setLoadError(null);
           setTracks(
             score.tracks.map((t: any) => ({
               index: t.index,
@@ -122,7 +126,24 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
           );
           setActiveTrack(0);
         });
-        api.renderFinished.on(() => !disposed && setReady(true));
+        api.renderStarted?.on?.(() => !disposed && setRenderProgress(0));
+        api.partialLayoutFinished?.on?.(() => {
+          if (disposed) return;
+          setRenderProgress((p) => Math.min(95, p + 5));
+        });
+        api.renderFinished.on(() => {
+          if (disposed) return;
+          setRenderProgress(100);
+          setReady(true);
+        });
+        api.error?.on?.((err: any) => {
+          if (disposed) return;
+          const msg =
+            err?.message ||
+            "No se pudo leer el archivo. Puede que el formato no esté soportado o el archivo esté dañado.";
+          setLoadError(msg);
+          toast.error(msg);
+        });
         api.playerStateChanged.on((e: any) => {
           if (!disposed) setPlaying(e.state === 1);
         });
@@ -135,7 +156,9 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
         api.load(bytes);
       } catch (err) {
         console.error(err);
-        toast.error("No se pudo cargar el visor de tablatura");
+        const msg = err instanceof Error ? err.message : "No se pudo cargar el visor de tablatura";
+        setLoadError(msg);
+        toast.error(msg);
       }
     })();
 
