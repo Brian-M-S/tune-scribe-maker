@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { getMyTabBytes } from "@/lib/uploads.functions";
+import { getCachedTab, setCachedTab } from "@/lib/tab-cache";
 import { AlphaTabViewer } from "@/components/AlphaTabViewer";
 import { Button } from "@/components/ui/button";
 
@@ -23,13 +24,20 @@ function UploadedTabPage() {
     let cancelled = false;
     (async () => {
       try {
+        // Fast path: render from IndexedDB cache if we've opened this tab before.
+        const cached = await getCachedTab(id);
+        if (cached && !cancelled) setBytes(cached);
+
         const res = await getBytes({ data: { id } });
         if (cancelled) return;
-        const bin = atob(res.base64);
-        const arr = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-        setBytes(arr);
         setMeta({ title: res.title, artist: res.artist });
+        if (!cached) {
+          const bin = atob(res.base64);
+          const arr = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+          setBytes(arr);
+          void setCachedTab(id, arr);
+        }
       } catch (e) {
         const msg = e instanceof Error ? e.message : "No se pudo cargar la tablatura";
         setError(msg);
