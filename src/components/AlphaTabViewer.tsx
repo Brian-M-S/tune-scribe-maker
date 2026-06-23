@@ -99,11 +99,10 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
               "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.3/dist/alphaTab.min.js",
           },
           player: {
+            // Defer soundfont (~2MB) until the user actually presses play.
             enablePlayer: true,
             enableCursor: true,
             enableUserInteraction: true,
-            soundFont:
-              "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.3/dist/soundfont/sonivox.sf2",
             scrollElement: mountRef.current,
           },
           display: {
@@ -112,6 +111,8 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
             // Smaller chunks => faster first visible bars.
             barCountPerPartial: 4,
             staveProfile: "tab",
+            // Only render bars near the viewport.
+            enableLazyLoading: true,
           },
         };
 
