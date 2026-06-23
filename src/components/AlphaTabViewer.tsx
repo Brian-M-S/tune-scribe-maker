@@ -106,7 +106,13 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
               "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.3/dist/soundfont/sonivox.sf2",
             scrollElement: mountRef.current,
           },
-          display: { scale: 1.0, layoutMode: "page" },
+          display: {
+            scale: 1.0,
+            layoutMode: "page",
+            // Smaller chunks => faster first visible bars.
+            barCountPerPartial: 4,
+            staveProfile: "tab",
+          },
         };
 
         api = new AlphaTabApi(mountRef.current, settings);
@@ -125,6 +131,13 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
             })),
           );
           setActiveTrack(0);
+          // Render only the first track initially — multi-track scores are
+          // dramatically faster this way; users can switch from the sidebar.
+          try {
+            if (score.tracks?.length > 1) api.renderTracks([score.tracks[0]]);
+          } catch {
+            /* noop */
+          }
         });
         api.renderStarted?.on?.(() => !disposed && setRenderProgress(0));
         api.partialLayoutFinished?.on?.(() => {
