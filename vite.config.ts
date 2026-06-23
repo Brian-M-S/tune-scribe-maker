@@ -12,4 +12,11 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    optimizeDeps: {
+      // alphaTab ships a web worker (alphaTab.worker.mjs) that Vite's dep optimizer
+      // cannot pre-bundle, causing 504s on related chunks. Exclude it.
+      exclude: ["@coderline/alphatab"],
+    },
+  },
 });
