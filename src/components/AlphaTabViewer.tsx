@@ -244,7 +244,23 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
   }, []);
 
   // --- Actions ---
-  const togglePlay = () => apiRef.current?.playPause?.();
+  const soundFontLoadedRef = useRef(false);
+  const togglePlay = async () => {
+    const api = apiRef.current;
+    if (!api) return;
+    if (!soundFontLoadedRef.current) {
+      soundFontLoadedRef.current = true;
+      try {
+        const url =
+          "https://cdn.jsdelivr.net/npm/@coderline/alphatab@1.8.3/dist/soundfont/sonivox.sf2";
+        const buf = await fetch(url).then((r) => r.arrayBuffer());
+        api.loadSoundFont(new Uint8Array(buf), true);
+      } catch {
+        toast.error("No se pudo cargar el sonido del reproductor");
+      }
+    }
+    api.playPause?.();
+  };
   const restart = () => {
     const api = apiRef.current;
     if (!api) return;
