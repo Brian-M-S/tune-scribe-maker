@@ -140,10 +140,21 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
             /* noop */
           }
         });
-        api.renderStarted?.on?.(() => !disposed && setRenderProgress(0));
+        api.renderStarted?.on?.(() => {
+          if (disposed) return;
+          setRenderProgress(0);
+          setReady(false);
+        });
         api.partialLayoutFinished?.on?.(() => {
           if (disposed) return;
           setRenderProgress((p) => Math.min(95, p + 5));
+        });
+        // Reveal the score as soon as the FIRST chunk of bars is painted;
+        // alphaTab keeps rendering the remaining partials in the background.
+        api.partialRenderFinished?.on?.(() => {
+          if (disposed) return;
+          setReady(true);
+          setRenderProgress((p) => Math.max(p, 25));
         });
         api.renderFinished.on(() => {
           if (disposed) return;
