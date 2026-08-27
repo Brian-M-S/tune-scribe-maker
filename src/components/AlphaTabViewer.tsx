@@ -109,7 +109,7 @@ export function AlphaTabViewer({ bytes, title, artist }: Props) {
             scale: 1.0,
             layoutMode: "page",
             // Smaller chunks => faster first visible bars.
-            barCountPerPartial: 4,
+            barCountPerPartial: 2,
             staveProfile: "tab",
             // Only render bars near the viewport.
             enableLazyLoading: true,
